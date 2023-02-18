@@ -1,4 +1,3 @@
--- 1- Créez les tables suivantes pour la démonstration
 CREATE TABLE accounts(
    id SERIAL PRIMARY KEY,
    first_name CHARACTER VARYING(100),
@@ -20,45 +19,25 @@ CREATE TABLE account_plans(
 
 );
 
--- 2- Connectez-vous à la base de données PostgreSQL
-$host = 'your_host_name';
-$dbname = 'your_database_name';
-$user = 'your_username';
-$password = 'your_password';
+INSERT INTO plans(plan) VALUES('SILVER'),('GOLD'),('PLATINUM');
 
-$dsn = "pgsql:host=$host;dbname=$dbname;user=$user;password=$password";
+--to connect to the database
+psql -U postgres -d xpninja
 
-try {
-    $pdo = new PDO($dsn);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    echo "Connected successfully to the database.";
-} catch (PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
-}
+--Insert three accounts with silver, gold, and platinum levels.
 
+INSERT INTO accounts(first_name, last_name) VALUES('Yann', 'YAO');
+INSERT INTO accounts(first_name, last_name) VALUES('Aymar', 'Yann');
+INSERT INTO accounts(first_name, last_name) VALUES('Yao', 'Kouadio');
 
--- 3- Insérez trois comptes avec des niveaux d'argent, d'or et de platine
-
-INSERT INTO accounts (first_name, last_name)
-VALUES ('John', 'Doe'), ('Jane', 'Doe'), ('Bob', 'Smith');
-
-SELECT id FROM plans WHERE plan = 'SILVER' OR plan = 'GOLD' OR plan = 'PLATINUM';
-
-INSERT INTO account_plans (account_id, plan_id, effective_date)
-VALUES (1, 1, current_date), (2, 2, current_date), (3, 3, current_date);
+INSERT INTO account_plans(account_id, plan_id, effective_date) VALUES(1, 3, CURRENT_DATE);
+INSERT INTO account_plans(account_id, plan_id, effective_date) VALUES(2, 1, CURRENT_DATE);
+INSERT INTO account_plans(account_id, plan_id, effective_date) VALUES(3, 2, CURRENT_DATE);
 
 
--- 4- Essayez d'insérer un autre compte mais avec un identifiant de plan qui n'existe pas dans le tableau des plans
-BEGIN;
+--Try to insert one more account but with a plan id that does not exist in the plans table. Based on the input, the step of assigning the plan to the account should fails that cause the whole transaction to be rolled back.
 
-INSERT INTO accounts(first_name, last_name) VALUES ('John', 'Doe');
-INSERT INTO account_plans(account_id, plan_id, effective_date) VALUES (1, 1, current_date);
+INSERT INTO accounts(first_name, last_name) VALUES('Yao', 'Nelly');
+INSERT INTO account_plans(account_id, plan_id, effective_date) VALUES(4, 4, CURRENT_DATE);
 
-INSERT INTO accounts(first_name, last_name) VALUES ('Jane', 'Doe');
--- Try to assign a plan with an ID that does not exist in the plans table:
-INSERT INTO account_plans(account_id, plan_id, effective_date) VALUES (2, 4, current_date);
-
-COMMIT;
-
-
-
+--Since the plan id 4 does not exist in the plans table, the second INSERT statement will fail and the whole transaction will be rolled back automatically
