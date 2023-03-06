@@ -12,7 +12,7 @@ CREATE TABLE plans(
 CREATE TABLE account_plans(
    account_id INTEGER NOT NULL,
    plan_id INTEGER NOT NULL,
-   effective_date DATE NOT NULL,
+   effective_date DATE NOT NULL, 
    PRIMARY KEY (account_id,plan_id),
    FOREIGN KEY(account_id) REFERENCES accounts(id),
    FOREIGN KEY(plan_id) REFERENCES plans(id)
